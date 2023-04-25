@@ -29,7 +29,7 @@ A user must have a unique username
 
 - [x] CI with dummy unit test
 - [x] User business rules
-- [ ] User repository saving in csv file
+- [x] User repository saving in csv file
 - [ ] Get user and Get user by id from csv file
 - [ ] Web api handlers
 - [ ] Add linter
