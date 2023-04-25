@@ -3,13 +3,10 @@
 # Set destination for COPY
 WORKDIR /app
 
-# Download Go modules
-COPY ./ ./
+COPY go.mod go.sum ./
+ADD ./cmd ./cmd
 RUN go mod download
 
-# Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /DunnoYT
+RUN dir -s
 
-EXPOSE 8080
-
-CMD ["/DunnoYT"]
+ RUN CGO_ENABLED=0 GOOS=linux go build ./cmd/web_api

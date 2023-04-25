@@ -1,10 +1,9 @@
-name: Build & Unit Test
+name: CI - Unit Test
 
 on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,11 +16,11 @@ jobs:
       - name: Display version
         run: go version
 
-      - name: Build
-        run: go build -v ./...
-
       - name: Setup dependencies
         run: go mod tidy
 
-      - name: Test
-        run: go test -v ./...
+      - name: Build Web Api
+        run: go build -v ./cmd/web_api
+
+      - name: UnitTest
+        run: go test -v ./cmd/...
