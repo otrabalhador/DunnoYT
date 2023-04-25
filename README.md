@@ -28,8 +28,9 @@ A user must have a unique username
 ## Roadmap
 
 - [x] CI with dummy unit test
-- [ ] User business rules
-- [ ] User repository
+- [x] User business rules
+- [ ] User repository saving in csv file
+- [ ] Get user and Get user by id from csv file
 - [ ] Web api handlers
 - [ ] Add linter
 - [ ] Functional tests
