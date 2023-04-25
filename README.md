@@ -25,7 +25,7 @@ A user must have a unique username
 
 ## Roadmap
 
-- [ ] CI with dummy unit test
+- [x] CI with dummy unit test
 - [ ] User business rules
 - [ ] User repository
 - [ ] Web api handlers
