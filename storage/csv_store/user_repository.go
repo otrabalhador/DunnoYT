@@ -11,8 +11,8 @@ type CsvUserRepository struct {
 	FilePath string
 }
 
-func NewCsvUserRepository(filePath string) (*CsvUserRepository, error) {
-	err := createFileIfNotExists(filePath)
+func NewCsvUserRepository(filePath string, clearExisting bool) (*CsvUserRepository, error) {
+	err := createFileIfNotExists(filePath, clearExisting)
 	if err != nil {
 		return nil, err
 	}
@@ -81,9 +81,9 @@ func (c *CsvUserRepository) GetByUsername(username string) (*domainUser.User, er
 	return nil, nil
 }
 
-func createFileIfNotExists(filePath string) error {
+func createFileIfNotExists(filePath string, clearExisting bool) error {
 	_, err := os.Stat(filePath)
-	if err == nil {
+	if err == nil && !clearExisting {
 		return nil // File already exists
 	}
 

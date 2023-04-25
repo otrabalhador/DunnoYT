@@ -14,7 +14,7 @@ func TestNewCsvUserRepository_Should_CreateFileIfNotExists(t *testing.T) {
 	fileName := GetNewFileName()
 	defer os.Remove(fileName)
 
-	_, err := NewCsvUserRepository(fileName)
+	_, err := NewCsvUserRepository(fileName, false)
 	assert.Nil(t, err)
 
 	f, err := os.Stat(fileName)
@@ -23,15 +23,30 @@ func TestNewCsvUserRepository_Should_CreateFileIfNotExists(t *testing.T) {
 	assert.NotNil(t, f)
 }
 
-func TestNewCsvUserRepository_Should_NotOverwriteFileIfAlreadyExists(t *testing.T) {
-	// TODO
+func TestNewCsvUserRepositoryWithClearPreviousContentTrue_Should_RemoveFileAndCreateAnother(t *testing.T) {
+	fileName := GetNewFileName()
+	defer os.Remove(fileName)
+
+	f, _ := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	defer f.Close()
+	_, _ = f.WriteString("John\nEryk\nJorge")
+
+	_, err := NewCsvUserRepository(fileName, true)
+	assert.Nil(t, err)
+
+	file, _ := os.Open(fileName)
+	defer file.Close()
+
+	bytes := make([]byte, 10)
+	readBytes, _ := file.Read(bytes)
+	assert.Equal(t, 0, readBytes)
 }
 
 func TestCreate_Should_WriteAsCsv(t *testing.T) {
 	fileName := GetNewFileName()
 	defer os.Remove(fileName)
 
-	repo, _ := NewCsvUserRepository(fileName)
+	repo, _ := NewCsvUserRepository(fileName, false)
 
 	user := &domainUser.User{Username: "John"}
 	err := repo.Create(user)
@@ -51,7 +66,7 @@ func TestCreateTwice_Should_BreakLineAndAddSecondUser(t *testing.T) {
 	fileName := GetNewFileName()
 	defer os.Remove(fileName)
 
-	repo, _ := NewCsvUserRepository(fileName)
+	repo, _ := NewCsvUserRepository(fileName, false)
 
 	user1 := &domainUser.User{Username: "John"}
 	user2 := &domainUser.User{Username: "Paul"}
@@ -72,7 +87,7 @@ func TestList_When_ThereIsNone_Should_ReturnEmptyArray(t *testing.T) {
 	fileName := GetNewFileName()
 	defer os.Remove(fileName)
 
-	repo, _ := NewCsvUserRepository(fileName)
+	repo, _ := NewCsvUserRepository(fileName, false)
 
 	users, err := repo.List()
 
@@ -84,7 +99,7 @@ func TestList_When_ThereAreUsers_Should_ReturnAllUsers(t *testing.T) {
 	fileName := GetNewFileName()
 	defer os.Remove(fileName)
 
-	repo, _ := NewCsvUserRepository(fileName)
+	repo, _ := NewCsvUserRepository(fileName, false)
 
 	f, _ := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
 	defer f.Close()
@@ -110,7 +125,7 @@ func TestGetByUsername_When_NotFound_Should_ReturnNil(t *testing.T) {
 	fileName := GetNewFileName()
 	defer os.Remove(fileName)
 
-	repo, _ := NewCsvUserRepository(fileName)
+	repo, _ := NewCsvUserRepository(fileName, false)
 	_ = repo.Create(&domainUser.User{Username: "John"})
 
 	user, err := repo.GetByUsername("Eryk")
@@ -123,7 +138,7 @@ func TestGetByUsername_When_Found_Should_ReturnUser(t *testing.T) {
 	fileName := GetNewFileName()
 	defer os.Remove(fileName)
 
-	repo, _ := NewCsvUserRepository(fileName)
+	repo, _ := NewCsvUserRepository(fileName, false)
 	_ = repo.Create(&domainUser.User{Username: "Eryk"})
 
 	user, err := repo.GetByUsername("Eryk")
