@@ -24,24 +24,28 @@ func (ur *fakeUserRepository) Create(user *User) error {
 	return nil
 }
 
-func (ur *fakeUserRepository) GetByUsername(username string) *User {
+func (ur *fakeUserRepository) GetByUsername(username string) (*User, error) {
 	if len(ur.Users) == 0 {
-		return nil
+		return nil, nil
 	} else {
-		return ur.Users[0]
+		return ur.Users[0], nil
 	}
+}
+
+func (ur *fakeUserRepository) List() ([]*User, error) {
+	panic("not implemented")
 }
 
 func TestNewUserService_ShouldHaveRepository(t *testing.T) {
 	fakeRepo := new(fakeUserRepository)
-	service := NewUserService(fakeRepo)
+	service := NewService(fakeRepo)
 
-	assert.Equal(t, fakeRepo, service.Repo)
+	assert.Equal(t, fakeRepo, service.repo)
 }
 
 func TestCreateNewUser(t *testing.T) {
 	fakeRepo := newFakeUserRepository([]*User{})
-	service := NewUserService(fakeRepo)
+	service := NewService(fakeRepo)
 
 	user := &User{Username: "Eryk"}
 
@@ -54,7 +58,7 @@ func TestCreateNewUser(t *testing.T) {
 
 func TestCreateNewUser_When_ThereIsAlreadyOneWithSameUserName_Should_ReturnError(t *testing.T) {
 	fakeRepo := newFakeUserRepository([]*User{{Username: "Eryk"}})
-	service := NewUserService(fakeRepo)
+	service := NewService(fakeRepo)
 
 	user := User{Username: "Eryk"}
 	err := service.Create(&user)
@@ -67,7 +71,7 @@ func TestCreateNewUser_When_RepositoryReturnsError_Should_ReturnError(t *testing
 	errorMessage := "error of fake user repository"
 	fakeRepo.ErrorOnCreation = errors.New(errorMessage)
 
-	service := NewUserService(fakeRepo)
+	service := NewService(fakeRepo)
 
 	err := service.Create(&User{Username: "Eryk"})
 

@@ -10,28 +10,41 @@ type User struct {
 
 type Repository interface {
 	Create(*User) error
-	GetByUsername(username string) *User
+	List() ([]*User, error)
+	GetByUsername(username string) (*User, error)
 }
 
 type Service struct {
-	Repo Repository
+	repo Repository
 }
 
-func NewUserService(userRepo Repository) *Service {
+func NewService(userRepo Repository) *Service {
 	return &Service{
-		Repo: userRepo,
+		repo: userRepo,
 	}
 }
 
 func (s *Service) Create(user *User) error {
-	alreadyExistent := s.Repo.GetByUsername(user.Username)
+	alreadyExistent, err := s.repo.GetByUsername(user.Username)
+	if err != nil {
+		return fmt.Errorf("Error getting user by username: %w", err)
+	}
+
 	if alreadyExistent != nil {
 		return fmt.Errorf("username %v already exists", user.Username)
 	}
 
-	if err := s.Repo.Create(user); err != nil {
+	if err := s.repo.Create(user); err != nil {
 		return fmt.Errorf("error creating user: %w", err)
 	}
 
 	return nil
+}
+
+func (s *Service) List() ([]*User, error) {
+	return s.repo.List()
+}
+
+func (s *Service) Get(username string) (*User, error) {
+	return s.repo.GetByUsername(username)
 }

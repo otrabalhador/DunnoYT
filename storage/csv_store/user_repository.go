@@ -56,8 +56,7 @@ func (c *CsvUserRepository) List() ([]*domainUser.User, error) {
 		return nil, fmt.Errorf("error opening csv: %w", err)
 	}
 
-	var users []*domainUser.User
-	fmt.Println(lines)
+	users := []*domainUser.User{}
 	for _, line := range lines {
 		users = append(users, &domainUser.User{
 			Username: line[0],
