@@ -1,8 +1,8 @@
 version: '3.7'
 
 x-shared_environment: &shared_environment
-  DUNNOYT_USER_STORAGE_FILE_PATH: user_storage.csv
-  DUNNOYT_USER_STORAGE_CLEAR_EXISTING: true
+  DUNNOYT_USER_STORAGE_FILE_PATH: "user_storage.csv"
+  DUNNOYT_USER_STORAGE_CLEAR_EXISTING: "true"
 
 services:
   app:
