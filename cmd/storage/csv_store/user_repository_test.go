@@ -1,7 +1,7 @@
 package csv_store
 
 import (
-	domainUser "DunnoYT/user"
+	domainUser "DunnoYT/cmd/user"
 	"encoding/csv"
 	"github.com/stretchr/testify/assert"
 	"math/rand"

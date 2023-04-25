@@ -1,7 +1,7 @@
 package csv_store
 
 import (
-	domainUser "DunnoYT/user"
+	domainUser "DunnoYT/cmd/user"
 	"encoding/csv"
 	"fmt"
 	"os"
