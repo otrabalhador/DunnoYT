@@ -4,15 +4,15 @@ import (
 	domainUser "DunnoYT/user"
 	"encoding/csv"
 	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"os"
 	"testing"
+	"time"
 )
 
-// TODO: Clean up csv files on test teardown
-
 func TestNewCsvUserRepository_Should_CreateFileIfNotExists(t *testing.T) {
-	fileName := "test_constructor.csv"
-	os.Remove(fileName)
+	fileName := GetNewFileName()
+	defer os.Remove(fileName)
 
 	_, err := NewCsvUserRepository(fileName)
 	assert.Nil(t, err)
@@ -28,8 +28,8 @@ func TestNewCsvUserRepository_Should_NotOverwriteFileIfAlreadyExists(t *testing.
 }
 
 func TestCreate_Should_WriteAsCsv(t *testing.T) {
-	fileName := "test_create_once.csv"
-	os.Remove(fileName)
+	fileName := GetNewFileName()
+	defer os.Remove(fileName)
 
 	repo, _ := NewCsvUserRepository(fileName)
 
@@ -48,8 +48,8 @@ func TestCreate_Should_WriteAsCsv(t *testing.T) {
 }
 
 func TestCreateTwice_Should_BreakLineAndAddSecondUser(t *testing.T) {
-	fileName := "test_user_create_twice.csv"
-	os.Remove(fileName)
+	fileName := GetNewFileName()
+	defer os.Remove(fileName)
 
 	repo, _ := NewCsvUserRepository(fileName)
 
@@ -66,4 +66,83 @@ func TestCreateTwice_Should_BreakLineAndAddSecondUser(t *testing.T) {
 	assert.Equal(t, 2, len(lines))
 	assert.Equal(t, user1.Username, lines[0][0])
 	assert.Equal(t, user2.Username, lines[1][0])
+}
+
+func TestList_When_ThereIsNone_Should_ReturnEmptyArray(t *testing.T) {
+	fileName := GetNewFileName()
+	defer os.Remove(fileName)
+
+	repo, _ := NewCsvUserRepository(fileName)
+
+	users, err := repo.List()
+
+	assert.Nil(t, err)
+	assert.Empty(t, users)
+}
+
+func TestList_When_ThereAreUsers_Should_ReturnAllUsers(t *testing.T) {
+	fileName := GetNewFileName()
+	defer os.Remove(fileName)
+
+	repo, _ := NewCsvUserRepository(fileName)
+
+	f, _ := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	defer f.Close()
+	_, err := f.WriteString("John\nEryk\nJorge")
+
+	expected := []domainUser.User{
+		{Username: "John"},
+		{Username: "Eryk"},
+		{Username: "Jorge"},
+	}
+
+	users, err := repo.List()
+
+	assert.Nil(t, err)
+	assert.Equal(t, len(expected), len(users))
+
+	for i := 0; i < len(users); i++ {
+		assert.Equal(t, expected[i].Username, users[i].Username)
+	}
+}
+
+func TestGetByUsername_When_NotFound_Should_ReturnNil(t *testing.T) {
+	fileName := GetNewFileName()
+	defer os.Remove(fileName)
+
+	repo, _ := NewCsvUserRepository(fileName)
+	_ = repo.Create(&domainUser.User{Username: "John"})
+
+	user, err := repo.GetByUsername("Eryk")
+
+	assert.Nil(t, err)
+	assert.Nil(t, user)
+}
+
+func TestGetByUsername_When_Found_Should_ReturnUser(t *testing.T) {
+	fileName := GetNewFileName()
+	defer os.Remove(fileName)
+
+	repo, _ := NewCsvUserRepository(fileName)
+	_ = repo.Create(&domainUser.User{Username: "Eryk"})
+
+	user, err := repo.GetByUsername("Eryk")
+
+	assert.Nil(t, err)
+	assert.Equal(t, "Eryk", user.Username)
+}
+
+var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+func GetNewFileName() string {
+	const charset = "" +
+		"abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	b := make([]byte, 8)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+
+	return string(b) + ".csv"
 }
