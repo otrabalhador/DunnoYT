@@ -1,4 +1,5 @@
-![CI](https://github.com/otrabalhador/DunnoYT/actions/workflows/unit-test.yaml/badge.svg)
+![CI-UnitTest](https://github.com/otrabalhador/DunnoYT/actions/workflows/unit-test.yaml/badge.svg)
+![CI-FunctionalTest](https://github.com/otrabalhador/DunnoYT/actions/workflows/functional-test.yaml/badge.svg)
 
 # DunnoYT
 
