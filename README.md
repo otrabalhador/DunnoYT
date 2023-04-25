@@ -1,3 +1,5 @@
+![CI](https://github.com/otrabalhador/DunnoYT/actions/workflows/unit-test.yaml/badge.svg)
+
 # DunnoYT
 
 I don't know yet what is this repository about. I just want to play with golang.
