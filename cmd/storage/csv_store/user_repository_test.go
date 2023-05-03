@@ -102,7 +102,10 @@ func TestList_When_ThereAreUsers_Should_ReturnAllUsers(t *testing.T) {
 	repo, _ := NewCsvUserRepository(fileName, false)
 
 	f, _ := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
-	defer f.Close()
+	defer func(f *os.File) {
+		_ = f.Close()
+	}(f)
+
 	_, err := f.WriteString("John\nEryk\nJorge")
 
 	expected := []domainUser.User{
