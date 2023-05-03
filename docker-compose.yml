@@ -8,8 +8,15 @@ services:
   app:
     build:
       context: .
+      target: web_api
     environment:
       <<: *shared_environment
     command: ["./web_api"]
     ports:
       - '8080:8080'
+
+  lint:
+    build:
+      context: .
+      target: qa
+    command: ["golangci-lint", "run", "-v"]

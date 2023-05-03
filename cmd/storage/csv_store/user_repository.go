@@ -46,7 +46,10 @@ func (c *CsvUserRepository) Create(user *domainUser.User) error {
 
 func (c *CsvUserRepository) List() ([]*domainUser.User, error) {
 	file, err := os.Open(c.FilePath)
-	defer file.Close()
+	defer func(file *os.File) {
+		_ = file.Close()
+	}(file)
+
 	if err != nil {
 		return nil, fmt.Errorf("error opening file: %w", err)
 	}
@@ -88,7 +91,10 @@ func createFileIfNotExists(filePath string, clearExisting bool) error {
 	}
 
 	f, err := os.Create(filePath)
-	defer f.Close()
+	defer func(f *os.File) {
+		_ = f.Close()
+	}(f)
+
 	if err != nil {
 		return fmt.Errorf("error creating file: %w", err)
 	}
