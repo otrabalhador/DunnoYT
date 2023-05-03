@@ -2,7 +2,7 @@ package main
 
 import (
 	"DunnoYT/cmd/storage/csv_store"
-	user2 "DunnoYT/cmd/user"
+	domainUser "DunnoYT/cmd/user"
 	"fmt"
 	"log"
 	"net/http"
@@ -44,8 +44,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	userService := user2.NewService(userRepository)
-	userHandler := user2.NewHandler(userService)
+	userService := domainUser.NewService(userRepository)
+	userHandler := domainUser.NewHandler(userService)
 
 	http.HandleFunc("/ping", globalHandle(handlePing))
 	http.HandleFunc("/user/", globalHandle(userHandler.HandleUser))
